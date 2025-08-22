@@ -5,48 +5,35 @@ import { useParams } from "react-router-dom";
 
 export default function PublicPage() {
   const { slug } = useParams();
-  const [place_id,setPlace ] = useState('null');
-  const [avis, setAvis] = useState([]);
+  const [place_id, setPlace] = useState("null");
   const [client, setClient] = useState(null);
-  const [langue, setLangue] = useState("fr"); // langue sélectionnée
+  const [langue, setLangue] = useState("fr");
 
   const messagesByLang = {
-    fr: {
-      pageTitre: "Page publique de",
-      avisVides: "Aucun avis pour le moment.",
-      avisRecents: "Avis récents :",
-      donnerAvis: "💬 Donnez votre avis",
-      aideAvis: "Votre opinion nous aide à améliorer nos services",
-      serviceClient: "⭐ Service client",
-      enLigne: "🟢 En ligne",
-      lang:"Donnez une note :"
-    },
-    en: {
-      pageTitre: "Public page of",
-      avisVides: "No reviews yet.",
-      avisRecents: "Recent reviews:",
-      donnerAvis: "💬 Give your review",
-      aideAvis: "Your opinion helps us improve our services",
-      serviceClient: "⭐ Customer Service",
-      enLigne: "🟢 Online",
-      lang:"Give a rating :"
-    },
-    ar: {
-      pageTitre: "الصفحة العامة لـ",
-      avisVides: "لا توجد تعليقات حتى الآن.",
-      avisRecents: "آخر التعليقات:",
-      donnerAvis: "💬 أضف رأيك",
-      aideAvis: "رأيك يساعدنا على تحسين خدماتنا",
-      serviceClient: "⭐ خدمة العملاء",
-      enLigne: "🟢 متصل",
-      lang: "أعطِ تقييماً"
-    }
+    fr: { lang: "Comment était votre expérience ?", text: "Votre avis nous aide à améliorer nos services." },
+    en: { lang: "How was your experience?", text: "Your feedback helps us improve our services." },
+    ar: { lang: "كيف كانت تجربتك؟", text: "ملاحظاتك تساعدنا في تحسين خدماتنا." }
   };
 
   const fetchClient = async () => {
     try {
       const res = await axios.get(`http://localhost:5000/public/${slug}`);
-        setPlace(res.data.place_id)
+      setPlace(res.data.place_id);
+
+      // titre page
+      document.title = res.data.nom;
+
+      // favicon
+      const favicon =
+        document.querySelector("link[rel='icon']") ||
+        document.createElement("link");
+      favicon.rel = "icon";
+      favicon.type = "image/png";
+      favicon.href = res.data.logo
+        ? `http://localhost:5000/uploads/${res.data.logo}`
+        : "/default-favicon.png";
+      document.head.appendChild(favicon);
+
       setClient(res.data);
       setLangue(res.data.langue);
     } catch (err) {
@@ -54,97 +41,65 @@ export default function PublicPage() {
     }
   };
 
-  const fetchAvis = async () => {
-    try {
-      const res = await axios.get(`http://localhost:5000/clients/${slug}/avis`);
-      setAvis(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
     fetchClient();
-    fetchAvis();
   }, [slug]);
 
-  if (!client) return <p>Chargement du client...</p>;
+  if (!client) return (
+    <div className="min-h-screen flex items-center justify-center bg-blue-50">
+      <div className="flex flex-col items-center">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-blue-800">Chargement...</p>
+      </div>
+    </div>
+  );
 
   const msg = messagesByLang[langue] || messagesByLang.fr;
 
   return (
     <div
-      className={`min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8`}
+      className="min-h-screen flex flex-col items-center justify-between bg-white py-12 px-4 relative"
       dir={langue === "ar" ? "rtl" : "ltr"}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Dropdown de langue */}
-        <div className={`flex ${langue === "ar" ? "justify-start" : "justify-end"} mb-4`}>
-          <select
-            value={langue}
-            onChange={(e) => setLangue(e.target.value)}
-            className="border border-gray-300 rounded-md p-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="fr">Français</option>
-            <option value="en">English</option>
-            <option value="ar">العربية</option>
-          </select>
-        </div>
-
-        {/* Header avec logo et titre */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-          <div className={`flex flex-col lg:flex-row items-center gap-8 ${langue === "ar" ? "lg:flex-row-reverse" : ""}`}>
-
-            {/* Logo */}
-            {client.logo && (
-              <div className="flex-shrink-0">
-                <div className="w-32 h-32 lg:w-40 lg:h-40 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl p-4 shadow-lg">
-                  <img
-                    src={`http://localhost:5000/uploads/${client.logo}`}
-                    alt={client.nom}
-                    className="w-full h-full object-contain rounded-xl"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Titre et informations */}
-            <div className="flex-1 text-center lg:text-left">
-              <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-4">
-                {msg.pageTitre}{" "}
-                <span className="block lg:inline text-blue-600 mt-2 lg:mt-0 lg:ml-2">
-                  {client.nom}
-                </span>
-              </h1>
-
-              {/* Badges */}
-              <div className={`flex flex-wrap ${langue === "ar" ? "justify-center lg:justify-end" : "justify-center lg:justify-start"} gap-2 mt-4`}>
-                <span className="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                  {msg.serviceClient}
-                </span>
-                <span className="px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                  {msg.enLigne}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Formulaire d'évaluation */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">{msg.donnerAvis}</h2>
-              <p className="text-gray-600">{msg.aideAvis}</p>
-            </div>
-            <RatingForm place_id={place_id} lang={msg.lang} slug={slug} onNewAvis={fetchAvis} />
-          </div>
-        </div>
-
-
-
+      {/* Sélecteur langue en haut à droite */}
+      <div className="absolute top-4 right-6">
+        <select
+          value={langue}
+          onChange={(e) => setLangue(e.target.value)}
+          className="px-4 py-2 rounded-xl border-none bg-white shadow-sm text-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        >
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+          <option value="ar">العربية</option>
+        </select>
       </div>
+
+      {/* Logo rond centré */}
+      {client.logo && (
+        <div className="flex justify-center mb-10 mt-8">
+          <div className="p-1 bg-white rounded-full shadow-lg border border-blue-100">
+            <img
+              src={`http://localhost:5000/uploads/${client.logo}`}
+              alt={client.nom}
+              className="w-40 h-40 object-cover rounded-full"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Rating form */}
+      <RatingForm
+        place_id={place_id}
+        lang={msg.lang}
+        text={msg.text}
+        slug={slug}
+        onNewAvis={() => {}}
+      />
+
+      {/* Footer discret */}
+      <footer className="mt-12 text-center text-gray-500 text-sm">
+        {client.nom} © {new Date().getFullYear()}
+      </footer>
     </div>
   );
 }

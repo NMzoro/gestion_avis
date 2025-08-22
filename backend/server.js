@@ -82,7 +82,7 @@ app.post('/admin/register', async (req, res) => {
     if (existing.length > 0) return res.status(400).json({ error: 'Email déjà utilisé.' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await db.query('INSERT INTO admins (nom, email, password) VALUES (?, ?, ?)', [nom, email, hashedPassword]);
+    await db.query('INSERT INTO admins (nom, email, password,otp) VALUES (?, ?, ?)', [nom, email, hashedPassword,null]);
     res.json({ message: 'Admin créé avec succès !' });
   } catch (err) {
     console.error(err);
@@ -109,6 +109,87 @@ app.post('/admin/login', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur lors de la connexion.' });
   }
 });
+
+// Générer un code OTP à 6 chiffres
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+// Route Forgot Password -> envoi OTP par email
+app.post('/admin/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email requis.' });
+
+    const [admins] = await db.query('SELECT * FROM admins WHERE email = ?', [email]);
+    if (admins.length === 0) {
+      return res.status(404).json({ error: 'Aucun compte trouvé avec cet email.' });
+    }
+
+    const otp = generateOTP();
+
+    // Sauvegarde OTP dans la DB
+    await db.query('UPDATE admins SET otp = ? WHERE email = ?', [otp, email]);
+
+    // Envoi email
+    await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: email,
+      subject: 'Code de vérification (OTP)',
+      html: `<p>Bonjour,</p>
+             <p>Voici votre code de vérification :</p>
+             <h2 style="color:blue;">${otp}</h2>
+             <p>Ce code est valable 10 minutes.</p>`
+    });
+
+    res.json({ message: 'Un code OTP a été envoyé à votre email.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur lors de l'envoi de l'OTP." });
+  }
+});
+
+// Vérification de l'OTP
+app.post('/admin/verify-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return res.status(400).json({ error: 'Email et OTP requis.' });
+
+    const [admins] = await db.query('SELECT * FROM admins WHERE email = ? AND otp = ?', [email, otp]);
+    if (admins.length === 0) {
+      return res.status(400).json({ error: 'OTP invalide.' });
+    }
+
+    // OTP correct -> on peut réinitialiser
+    await db.query('UPDATE admins SET otp = NULL WHERE email = ?', [email]);
+
+    res.json({ message: 'OTP validé. Vous pouvez maintenant changer le mot de passe.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur lors de la vérification de l'OTP." });
+  }
+});
+
+
+// Changement du mot de passe
+app.post('/admin/reset-password', async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return res.status(400).json({ error: 'Email et nouveau mot de passe requis.' });
+    }
+
+    // Hash du mot de passe
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await db.query('UPDATE admins SET password = ? WHERE email = ?', [hashedPassword, email]);
+
+    res.json({ message: "Mot de passe réinitialisé avec succès !" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur lors de la réinitialisation du mot de passe." });
+  }
+});
+
 
 // Fonction pour slug unique
 const generateUniqueSlug = async (name) => {
@@ -464,7 +545,7 @@ app.delete('/avis/:id', authMiddleware, async (req, res) => {
 // Modifier les infos de l'admin connecté
 app.put('/admin/me', authMiddleware, async (req, res) => {
   try {
-    const { nom, email, password } = req.body;
+    const { nom, email, password,otp=null } = req.body;
     const updates = [];
     const values = [];
 
@@ -480,6 +561,10 @@ app.put('/admin/me', authMiddleware, async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, 10);
       updates.push("password = ?");
       values.push(hashedPassword);
+    }
+        if (otp) {
+      updates.push("otp = ?");
+      values.push(otp);
     }
 
     if (updates.length === 0) return res.status(400).json({ error: "Aucune donnée à mettre à jour." });

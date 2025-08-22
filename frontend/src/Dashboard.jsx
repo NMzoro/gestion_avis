@@ -186,7 +186,7 @@ export default function Dashboard() {
         <div>
           <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">Note moyenne</p>
           <p className="text-3xl font-bold text-slate-900 mt-2">
-            {moyenne !== null ? moyenne : "--"}
+            {moyenne !== null ? moyenne : "--"}/3
           </p>
           <div className="flex items-center mt-1">
             <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full flex items-center">

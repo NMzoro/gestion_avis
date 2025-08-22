@@ -13,6 +13,8 @@ import AdminAvisClient from "./AdminAvisAllClients";
 import AdminAvisAllClients from "./AdminAvisAllClients";
 import CustomerReviewsLanding from "./CustomerReviewsLanding";
 import Register from "./Register";
+import ForgotPassword from "./ForgotPassword";
+import VerifyOtp from "./VerifyOtp";
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -26,6 +28,8 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot/password" element={<ForgotPassword />} />
+        <Route path="/verify/otp" element={<VerifyOtp />} />
         <Route path="/" element={<CustomerReviewsLanding />} />
         <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
         <Route path="/addClient" element={<ProtectedRoute><Layout><AddClient /></Layout></ProtectedRoute>} />
