@@ -12,6 +12,7 @@ Clonez le projet sur votre machine.
 3. Ajoutez un fichier `.env` contenant la ligne suivante :
    ```env
    VITE_BACKEND_URL='http://localhost:5000'
+   VITE_FRONTEND_URL='http://localhost:3000'
    ```
 
 ## Étape 3 : Installation du Back-end
