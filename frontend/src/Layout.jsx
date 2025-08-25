@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { Home, UserPlus, List, Menu, ChevronLeft, ChevronRight, User, LogOut, ChevronDown, Settings, ActivitySquare } from "lucide-react";
 import axios from "axios";
+import api from "./api";
 
 export default function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -20,9 +21,7 @@ export default function Layout({ children }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/admin/me", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        });
+        const res = await api.get("/admin/me");
         setNom(res.data.nom);
       } catch (err) {
         console.error(err);

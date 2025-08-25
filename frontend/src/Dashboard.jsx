@@ -280,7 +280,7 @@ export default function Dashboard() {
                       <div className="flex items-center flex-1">
                         {client.logo ? (
                           <img 
-                            src={`http://localhost:5000/uploads/${client.logo}`} 
+                            src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${client.logo}`} 
                             alt={client.nom} 
                             className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm group-hover:border-blue-100 transition-colors" 
                           />

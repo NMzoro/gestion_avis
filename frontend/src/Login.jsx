@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
+import custom from './custom';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { data } = await axios.post('http://localhost:5000/admin/login', { email, password });
+      const { data } = await custom.post('/admin/login', { email, password });
       localStorage.setItem('token', data.token);
       toast.success('Connexion réussie!');
       setTimeout(() => navigate('/dashboard'), 1000);

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
+import custom from "./custom";
 
 const VerifyOtp = ({ email, onSuccess }) => {
   const [otp, setOtp] = useState("");
@@ -11,7 +12,7 @@ const VerifyOtp = ({ email, onSuccess }) => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/admin/verify-otp", {
+      const res = await custom.post("/admin/verify-otp", {
         email,
         otp,
       });

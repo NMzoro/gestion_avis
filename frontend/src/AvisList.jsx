@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Star, User, Calendar, MessageCircle, TrendingUp } from "lucide-react";
+import custom from "./custom";
 
 export default function AvisList({ slug }) {
   const [avis, setAvis] = useState([]);
@@ -9,6 +10,7 @@ export default function AvisList({ slug }) {
   const avisPerPage = 4;
 
   useEffect(() => {
+
     const fetchAvis = async () => {
       try {
         setLoading(true);
@@ -18,7 +20,19 @@ export default function AvisList({ slug }) {
           return;
         }
         
-        const res = await axios.get(`http://localhost:5000/clients/${slug}/avis`);
+        const res = await custom.get(`/clients/${slug}/avis`);
+    document.title = res.data[0].nom;
+
+      // favicon
+      const favicon =
+        document.querySelector("link[rel='icon']") ||
+        document.createElement("link");
+      favicon.rel = "icon";
+      favicon.type = "image/png";
+      favicon.href = res.data[0].logo
+        ? `${import.meta.env.VITE_BACKEND_URL}/uploads/${res.data[0].logo}`
+        : "/default-favicon.png";
+      document.head.appendChild(favicon);
         setAvis(res.data);
         setLoading(false);
       } catch (err) {
@@ -53,7 +67,7 @@ export default function AvisList({ slug }) {
     : 0;
 
   // Distribution des notes
-  const noteDistribution = [5, 4, 3, 2, 1].map(note => ({
+  const noteDistribution = [3, 2, 1].map(note => ({
     note,
     count: avis.filter(a => a.note === note).length,
     percentage: avis.length ? (avis.filter(a => a.note === note).length / avis.length) * 100 : 0

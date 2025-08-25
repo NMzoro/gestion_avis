@@ -82,7 +82,7 @@ app.post('/admin/register', async (req, res) => {
     if (existing.length > 0) return res.status(400).json({ error: 'Email déjà utilisé.' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await db.query('INSERT INTO admins (nom, email, password,otp) VALUES (?, ?, ?)', [nom, email, hashedPassword,null]);
+    await db.query('INSERT INTO admins (nom, email, password,otp) VALUES (?, ?, ?,null)', [nom, email, hashedPassword,null]);
     res.json({ message: 'Admin créé avec succès !' });
   } catch (err) {
     console.error(err);
@@ -360,21 +360,35 @@ app.post('/clients/:slug/avis', async (req, res) => {
 app.get('/clients/:slug/avis', async (req, res) => {
   try {
     const { slug } = req.params;
-    const [clients] = await db.query('SELECT id FROM clients WHERE slug = ?', [slug]);
-    if (clients.length === 0) return res.status(404).json({ error: 'Client non trouvé' });
+
+    const [clients] = await db.query(
+      'SELECT id, nom,logo  FROM clients WHERE slug = ?',
+      [slug]
+    );
+
+    if (clients.length === 0) {
+      return res.status(404).json({ error: 'Client non trouvé' });
+    }
 
     const clientId = clients[0].id;
+
+    // 🔥 JOIN pour ramener aussi le nom du client
     const [avis] = await db.query(
-      'SELECT * FROM avis WHERE client_id = ? ORDER BY date_soumission DESC',
+      `SELECT avis.*, clients.nom,clients.logo
+       FROM avis 
+       JOIN clients ON avis.client_id = clients.id
+       WHERE avis.client_id = ?
+       ORDER BY avis.date_soumission DESC`,
       [clientId]
     );
-    
+
     res.json(avis);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erreur serveur lors de la récupération des avis.' });
   }
 });
+
 
 // Récupérer les infos de l'admin connecté
 app.get('/admin/me', authMiddleware, async (req, res) => {
@@ -598,6 +612,5 @@ app.get('/public/:slug', async (req, res) => {
 // Servir logos
 app.use('/uploads', express.static(uploadDir));
 
-const PORT = process.env.PORT || 5000;
-const HOST = '0.0.0.0';
-app.listen(PORT,HOST, () => console.log(`Server running on port ${PORT}`));
+const PORT = 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

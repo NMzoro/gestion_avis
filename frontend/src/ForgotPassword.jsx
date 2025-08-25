@@ -3,6 +3,7 @@ import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 import VerifyOtp from "./VerifyOtp";
 import ResetPassword from "./ResetPassword";
+import custom from "./custom";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/admin/forgot-password", { email });
+      const res = await custom.post("/admin/forgot-password", { email });
       toast.success(res.data.message || "OTP envoyé avec succès !");
       setStep(2);
     } catch (err) {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Toaster, toast } from 'react-hot-toast';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
+import custom from './custom';
 
 const Register = () => {
   const [nom, setNom] = useState('');
@@ -14,7 +15,7 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/admin/register', { nom, email, password });
+      const response = await custom.post('/admin/register', { nom, email, password });
       toast.success(response.data.message || "Inscription réussie !");
       setNom('');
       setEmail('');

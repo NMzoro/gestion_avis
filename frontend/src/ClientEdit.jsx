@@ -45,7 +45,7 @@ const ClientEdit = () => {
         });
         
         if (client.logo) {
-          setLogoPreview(`http://localhost:5000/uploads/${client.logo}`);
+          setLogoPreview(`${import.meta.env.VITE_BACKEND_URL}/uploads/${client.logo}`);
         }
         
         setLoading(false);

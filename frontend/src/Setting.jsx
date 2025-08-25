@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { User, Lock, Save, Settings as SettingsIcon, Eye, EyeOff } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
+import api from "./api";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("infos");
@@ -19,9 +20,7 @@ export default function Settings() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/admin/me", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        });
+        const res = await api.get("/admin/me");
         setForm({ ...form, nom: res.data.nom, email: res.data.email });
       } catch (err) {
         console.error(err);
@@ -46,9 +45,7 @@ export default function Settings() {
         ? { nom: form.nom, email: form.email }
         : { password: form.password, currentPassword: form.currentPassword };
       
-      await axios.put("http://localhost:5000/admin/me", dataToSend, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
+      await api.put("/admin/me", dataToSend);
       
       toast.success("Informations mises à jour avec succès !");
       

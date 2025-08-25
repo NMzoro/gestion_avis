@@ -5,7 +5,6 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
 });
 
-// Add a request interceptor to include the token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {

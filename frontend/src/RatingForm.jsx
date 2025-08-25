@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
+import custom from "./custom";
 
 export default function RatingForm({ slug, place_id, onNewAvis, lang, text }) {
   const [note, setNote] = useState(0);
@@ -40,8 +41,8 @@ export default function RatingForm({ slug, place_id, onNewAvis, lang, text }) {
         return;
       }
 
-      const res = await axios.post(
-        `http://localhost:5000/clients/${slug}/avis`,
+      const res = await custom.post(
+        `/clients/${slug}/avis`,
         { note, commentaire: commentaire.trim(), contact: contact.trim() }
       );
 

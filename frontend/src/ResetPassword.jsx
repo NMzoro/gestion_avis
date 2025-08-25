@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
+import custom from "./custom";
 
 const ResetPassword = ({ email }) => {
   const [password, setPassword] = useState("");
@@ -16,7 +17,7 @@ const ResetPassword = ({ email }) => {
 
     setIsLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/admin/reset-password", {
+      const res = await custom.post("/admin/reset-password", {
         email,
         newPassword: password,
       });

@@ -245,7 +245,7 @@ const ClientList = () => {
                             {client.logo ? (
                               <img
                                 className="h-12 w-12 rounded-full object-cover shadow-sm"
-                                src={`http://localhost:5000/uploads/${client.logo}`}
+                                src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${client.logo}`}
                                 alt={client.nom}
                               />
                             ) : (
@@ -316,7 +316,7 @@ const ClientList = () => {
                               </svg>
                             </Link>
                             <a
-                              href={`http://localhost:3000/public/${client.slug}`}
+                              href={`${import.meta.env.VITE_FRONTEND_URL}/public/${client.slug}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
@@ -356,7 +356,7 @@ const ClientList = () => {
               <div className="flex-shrink-0">
                 <img
                   className="h-14 w-14 rounded-lg object-cover border-2 border-gray-100 shadow-sm group-hover:shadow-md transition-shadow"
-                  src={`http://localhost:5000/uploads/${client.logo}`}
+                  src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${client.logo}`}
                   alt={client.nom}
                 />
               </div>
@@ -400,7 +400,7 @@ const ClientList = () => {
               </svg>
             </button>
             <a
-              href={`http://localhost:3000/public/${client.slug}`}
+              href={`${import.meta.env.VITE_FRONTEND_URL}/public/${client.slug}`}
               target="_blank"
               rel="noopener noreferrer"
               className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -493,7 +493,7 @@ const ClientList = () => {
                   Statut Business : {client.business_statut}
                 </a>
               <a
-                href={`http://localhost:3000/public/${client.slug}`}
+                href={`${import.meta.env.VITE_FRONTEND_URL}/public/${client.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center text-sm text-gray-600 hover:text-gray-800 transition-colors group/link"
@@ -616,7 +616,7 @@ const ClientList = () => {
           {selectedClient.logo && (
             <div className="flex-shrink-0">
               <img
-                src={`http://localhost:5000/uploads/${selectedClient.logo}`}
+                src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${selectedClient.logo}`}
                 alt={selectedClient.nom}
                 className="h-16 w-16 object-contain rounded-lg border-2 border-gray-100 shadow-sm"
               />
@@ -814,7 +814,7 @@ const ClientList = () => {
             Fermer
           </button>
           <a
-            href={`http://localhost:3000/public/${selectedClient.slug}`}
+            href={`${import.meta.env.VITE_FRONTEND_URL}/public/${selectedClient.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors text-sm font-medium"
@@ -823,6 +823,17 @@ const ClientList = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
             Page publique
+          </a>
+          <a
+            href={`${import.meta.env.VITE_FRONTEND_URL}/public/${selectedClient.slug}/avis`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-800 transition-colors text-sm font-medium"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            Liste Avis
           </a>
           <a
             href={`https://www.google.com/maps/place/${selectedClient.nom}`}

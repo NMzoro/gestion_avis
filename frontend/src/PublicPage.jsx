@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import RatingForm from "./RatingForm";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import custom from "./custom";
 
 export default function PublicPage() {
   const { slug } = useParams();
@@ -17,7 +18,7 @@ export default function PublicPage() {
 
   const fetchClient = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/public/${slug}`);
+      const res = await custom.get(`/public/${slug}`);
       setPlace(res.data.place_id);
 
       // titre page
@@ -30,7 +31,7 @@ export default function PublicPage() {
       favicon.rel = "icon";
       favicon.type = "image/png";
       favicon.href = res.data.logo
-        ? `http://localhost:5000/uploads/${res.data.logo}`
+        ? `${import.meta.env.VITE_BACKEND_URL}/uploads/${res.data.logo}`
         : "/default-favicon.png";
       document.head.appendChild(favicon);
 
@@ -79,7 +80,7 @@ export default function PublicPage() {
         <div className="flex justify-center mb-10 mt-8">
           <div className="p-1 bg-white rounded-full shadow-lg border border-blue-100">
             <img
-              src={`http://localhost:5000/uploads/${client.logo}`}
+              src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${client.logo}`}
               alt={client.nom}
               className="w-40 h-40 object-cover rounded-full"
             />

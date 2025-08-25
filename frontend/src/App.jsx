@@ -9,7 +9,6 @@ import AvisList from "./AvisList";
 import Login from "./Login";
 import Settings from "./Setting";
 import ClientEdit from "./ClientEdit";
-import AdminAvisClient from "./AdminAvisAllClients";
 import AdminAvisAllClients from "./AdminAvisAllClients";
 import CustomerReviewsLanding from "./CustomerReviewsLanding";
 import Register from "./Register";
